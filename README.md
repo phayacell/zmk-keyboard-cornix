@@ -1,6 +1,6 @@
-# ZMK Shield Cornix
+# ZMK Keyboard for  Cornix
 
-This shield has been tested with Cornix using ZMK and provides full split-role configuration, battery power management, and Bluetooth central/peripheral setup per ZMK split guidelines 
+This community firmwarw has been tested with Cornix using ZMK and provides full split-role configuration, battery power management, and Bluetooth central/peripheral setup per ZMK split guidelines 
 
 
 ![image](images/cornix_with_dongle.png)
@@ -46,6 +46,40 @@ Since v2.3 this board' flash partitions has updated, removed SD (reducing sd par
 > You may need to reset fw by reset.uf2 from ealier version
 
 > You can rollback to stock firmware by flash orgin uf2 file, backup files under rmkfw/
+
+## 🔰 Easy Method: Clone This Repository and Build with GitHub Actions
+
+If you’re new to ZMK and don’t want to deal with `west.yml` or module management, you can simply use this repository directly to customize your firmware.
+
+### Steps
+
+1. **Fork or Clone This Repository**
+   - Click **Fork** in the top right to copy this repo to your GitHub account, or
+   - Run `git clone` locally.
+
+   > Forking is recommended, because GitHub Actions will automatically build your firmware.
+
+2. **Edit Your Keymap**
+   - Locate the keymap file in `config/cornix.keymap` (or whichever `.keymap` file you want to customize).
+   - You can edit it directly or use the [ZMK Keymap Editor](https://nickcoutsos.github.io/keymap-editor/):
+     - Open the editor and load your `.keymap` file.
+     - Make changes with the visual editor.
+     - Download the updated file and replace it in your repository.
+     - Commit and push the changes to GitHub.
+
+3. **Build with GitHub Actions**
+   - After pushing, GitHub Actions will automatically run the build.
+   - Once the workflow finishes, go to **Actions → your latest run → Artifacts** and download the firmware (`.uf2`) files.
+
+4. **Flash Your Keyboard**
+   - Put your board into UF2 bootloader mode (usually by double-tapping the reset button).
+   - Drag and drop the `.uf2` file onto the mounted drive.
+
+### Who Is This For?
+
+- Beginners to ZMK  
+- Users who only want to customize keymaps  
+- Anyone who doesn’t need to modify drivers or hardware definitions
 
 ## How to build Cornix Zmk firmware from scratch
 
@@ -104,6 +138,8 @@ remotes:
     url-base: https://github.com/zmkfirmware
   - name: cornix-shield
     url-base: https://github.com/hitsmaxft
+  - name: urob
+    url-base: https://github.com/urob
 ```
 
 Add to the `manifest/projects` section:
@@ -117,6 +153,9 @@ projects:
   - name: zmk-keyboard-cornix
     remote: cornix-shield
     revision: main
+  - name: zmk-helpers
+    remote: urob
+    revision: main
 ```
 
 ### 2. Update Dependencies
@@ -129,15 +168,35 @@ west update
 
 Edit the `build.yaml` file, add:
 
+> [!NOTE]
+> 1. If you are using (default) cornix without dongle, choose "cornix_left", "cornix_right" and "reset".
+> 2. If you are using cornix with dongle, choose "cornix_dongle". "cornix_left_for_dongle", "cornix_right" and "reset".
+> 3. Add "cornix_indicator" shield to enable RGB led light. It consumes much more power, use at your own risk.
+
 ```yaml
 include:
-  - board: cornix_e73
-    shield: cornix_main_left
+  # Use cornix with dongle
+  - board: cornix_dongle
+    shield: cornix_dongle_eyelash dongle_display
+    snippet: studio-rpc-usb-uart
+    artifact-name: cornix_dongle
+
+  - board: cornix_ph_left
+    # shield: cornix_indicator
+    artifact-name: cornix_left_for_dongle
+
+  # Use cornix without dongle
+  - board: cornix_left
+    # shield: cornix_indicator
     artifact-name: cornix_left
 
-  - board: cornix_e73
-    shield: cornix_right
+  - board: cornix_right
+    # shield: cornix_indicator
     artifact-name: cornix_right
+
+  - board: cornix_right
+    shield: settings_reset
+    artifact-name: reset
 ```
 
 ### 4. Build Firmware
