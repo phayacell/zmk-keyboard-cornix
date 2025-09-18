@@ -40,16 +40,6 @@
             quick-tap-ms = <HM_TAPPING_TERM>;
         };
 
-        lt: layer_tap {
-            compatible = "zmk,behavior-hold-tap";
-            #binding-cells = <2>;
-            bindings = <&mo>, <&kp>;
-
-            flavor = "hold-preferred";
-            tapping-term-ms = <HM_TAPPING_TERM>;
-            quick-tap-ms = <HM_TAPPING_TERM>;
-        };
-
         bspc_del: backspace_delete {
             compatible = "zmk,behavior-mod-morph";
             display-name = "Backspace/Delete";
