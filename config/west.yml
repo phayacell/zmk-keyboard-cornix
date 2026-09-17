@@ -23,7 +23,7 @@ manifest:
       clone-depth: 1
     - name: zmk-dongle-display
       remote: hitsmaxft
-      revision: main
+      revision: bb7d9c34d2 # "migrate to lvgl 9" の直前
       clone-depth: 1
   self:
     path: config
